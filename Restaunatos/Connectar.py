@@ -4,11 +4,10 @@ import requests
 from py2neo import Graph, Node, Relationship
 
 def find_tweets(keyword, since_id=-1):
-    TWITTER_BEARER = os.environ["TWITTER_BEARER"]
+    USER = os.environ["USER"]
 
     headers = dict(
-        accept='application/json',
-        Authorization='Bearer'+TWITTER_BEARER
+        Authorization='Bearer'+USER
         )
 
     payload = dict(
@@ -18,4 +17,17 @@ def find_tweets(keyword, since_id=-1):
         lang = "en"
         since_id = since_id
         )
+
+    def upload_tweets(users):
+        graph = Graph()
+
+        for t in users:
+            u = t['user']
+            e = t['password']
+
+            users = graph.merge_one("user","id", t['id'])
+            users.properties['text']= t['text']
+
+            user = graph.merge_one("User","username", u["screen_name"])
+            
     
